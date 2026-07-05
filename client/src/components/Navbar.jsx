@@ -6,7 +6,7 @@ const Navbar=()=>{
         <div className='bg-[#CF6DFC] text-white shadow-md flex justify-between px-8 py-4'>
             <div className='flex flex-row items-center gap-4'>
                 <img src={vite} alt="PrepBuddy" className='w-12 h-12 bg-black'/>
-                <h1 className='text-3xl font-bold italic text-blue-600'>Hello User</h1>
+                <h1 className='text-4xl font-bold italic text-[#FDFBD4]'>Hello User</h1>
             </div>
             <div className='flex flex-row gap-8 items-end'>
                 <div>
