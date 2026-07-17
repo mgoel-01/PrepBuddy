@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 const Signup=()=>{
+    const navigate=useNavigate();
     const [formData,setFormData]=useState({
         name:"",
         email:"",
@@ -10,7 +11,7 @@ const Signup=()=>{
         year:"",
         branch:"",
     });
-    const handleSubmit=(e)=>{
+    const handleSubmit=async(e)=>{
         e.preventDefault();
         const {
             name,
@@ -35,7 +36,6 @@ const Signup=()=>{
             
         }
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
         if (!emailRegex.test(email)) {
             alert("Enter a valid email.");
             return;
@@ -48,16 +48,36 @@ const Signup=()=>{
             alert("Passwords do not match.");
             return;
         }
+        try{
+            const response=await fetch("http://localhost:5000/api/auth/signup",{
+                method: "POST",
+                headers: {
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({name,email,password,college,year,branch})
+            });
+            const data=await response.json();
+            if(response.ok){
+                alert("SignUp Successful!!");
+                setFormData({
+                    name:"",
+                    email:"",
+                    password:"",
+                    confirmPassword:"",
+                    college:"",
+                    year:"",
+                    branch:"",
+                });
+                navigate("/login");
+            }
+            else{
+                alert(data.message);
+            }
+        }
+        catch(error){
+            console.log(error);
+        }
         console.log(formData);
-        setFormData({
-            name:"",
-            email:"",
-            password:"",
-            confirmPassword:"",
-            college:"",
-            year:"",
-            branch:"",
-        });
     }
     const handleChange=(e)=>{
         setFormData({...formData,[e.target.name]:e.target.value});

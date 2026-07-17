@@ -1,18 +1,48 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 const Login=()=> {
     const [userData, setUserData] = useState({email:"",password:""});
-    const handleSubmit=(e)=>{
+    const navigate=useNavigate();
+    const [loading, setLoading] = useState(false);
+    const {login}=useAuth();
+    const handleSubmit=async(e)=>{
         e.preventDefault();
         const {email,password}=userData;
         if (!email || !password) {
             alert("Please fill all fields.");
             return;
         }
-        setUserData({
-            email: "",
-            password: "",
-        });
+        try{
+            setLoading(true);
+            const response=await fetch("http://localhost:5000/api/auth/login",{
+                method: "POST",
+                headers:{
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify({email,password})
+            });
+            const data=await response.json();
+            if(response.ok){
+                login(data.user, data.token);
+                setUserData({
+                    email: "",
+                    password: "",
+                });
+                navigate("/dashboard");
+            }
+            else{
+                alert(data.message);
+            }
+        }
+        catch(error){
+            console.log(error);
+            alert("Something went wrong. Please try again.");
+        }
+        finally{
+            setLoading(false);
+        }
+        
     }
     const handleChange=(e)=>{
         setUserData({
@@ -42,9 +72,10 @@ const Login=()=> {
                     </div>
                     <button
                         type="submit"
+                        disabled={loading}
                         className="w-full  text-white py-3 rounded-lg bg-[#CF6DFC] hover:bg-[#B95AE8] transition duration-200"
                     >
-                        Login
+                        {loading ? "Logging in..." : "Login"}
                     </button>
                     <p className="text-center">
                         Don't have an account?
