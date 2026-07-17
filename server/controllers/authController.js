@@ -1,5 +1,5 @@
 import User from "../models/user.js";
-import bcrypt from "bcrypt.js";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 export const signup=async(req,res)=>{
     try{
@@ -13,7 +13,7 @@ export const signup=async(req,res)=>{
             name,email,password: hashedPassword,college,year,branch,
         }); 
         const token=jwt.sign(
-            {id:user_id},process.env.JWT_SECRET,{expiresIn:"7d"}
+            {id:user._id},process.env.JWT_SECRET,{expiresIn:"7d"}
         );
         res.status(201).json({
             message: "Signup successful",
@@ -38,8 +38,8 @@ export const signup=async(req,res)=>{
 
 export const login=async(req,res)=>{
     try{
-        const {email,password}=req.body();
-        const user=User.findOne({email});
+        const {email,password}=req.body;
+        const user= await User.findOne({email});
         if(!user){
             return res.status(400).json({success:false,message:"User did not exist"});
         }
